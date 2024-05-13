@@ -9,6 +9,7 @@ const router = express.Router();
 const sqlite3 = require("sqlite3").verbose();
 require("dotenv").config();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 //Connect to database
 const db = new sqlite3.Database(process.env.DATABASE);
@@ -120,7 +121,9 @@ router.post("/login", async (req, res) => {
 
     //Validate input
     if (!username || !password) {
-      return res.status(400).json({ error: "Fill in all fields" });
+      return res
+        .status(400)
+        .json({ error: "Username and password is required" });
     }
     //Validate username
     if (username.length < 5) {
@@ -149,8 +152,17 @@ router.post("/login", async (req, res) => {
         if (!passwordMatch) {
           res.status(401).json({ message: "Incorrect username or password" });
         } else {
-          //Correct login information
-          res.status(200).json({ message: "Correct login" });
+          //If correct login information
+          //Create JWT
+          const payload = { username: username };
+          const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
+            expiresIn: "1h",
+          });
+          const response = {
+            message: "User logged in",
+            token: token,
+          };
+          res.status(200).json({ response });
         }
       }
     });
