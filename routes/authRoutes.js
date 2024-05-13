@@ -8,6 +8,7 @@ const express = require("express");
 const router = express.Router();
 const sqlite3 = require("sqlite3").verbose();
 require("dotenv").config();
+const bcrypt = require("bcrypt");
 
 //Connect to database
 const db = new sqlite3.Database(process.env.DATABASE);
@@ -69,6 +70,9 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ error: "Invalid email address" });
     }
 
+    //Hash password
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
     //Check if user already exists
     const sqlCheckUsername = "SELECT * FROM users WHERE username = ?";
     db.get(sqlCheckUsername, [username], (err, usernameRow) => {
@@ -91,13 +95,17 @@ router.post("/register", async (req, res) => {
 
         // If correct information - save user
         const sql = `INSERT INTO users(firstname, lastname, email, username, password) VALUES(?, ?, ?, ?, ?)`;
-        db.run(sql, [firstname, lastname, email, username, password], (err) => {
-          if (err) {
-            return res.status(400).json({ message: "Error creating user" });
-          } else {
-            return res.status(201).json({ message: "User created" });
+        db.run(
+          sql,
+          [firstname, lastname, email, username, hashedPassword],
+          (err) => {
+            if (err) {
+              return res.status(400).json({ message: "Error creating user" });
+            } else {
+              return res.status(201).json({ message: "User created" });
+            }
           }
-        });
+        );
       });
     });
   } catch (error) {
