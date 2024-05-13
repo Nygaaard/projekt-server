@@ -10,11 +10,11 @@ const sqlite3 = require("sqlite3").verbose();
 //Connect to database
 const db = new sqlite3.Database(process.env.DATABASE);
 
-//Create table menu
+//Create tables
 db.serialize(() => {
   //Drop tables if exists
   db.run("DROP TABLE IF EXISTS menu");
-  db.run("DROP TABLE IF EXISTS users");
+  db.run("DROP TABLE IF EXISTS admin_user");
 
   //Create table menu
   db.run(`CREATE TABLE menu(
@@ -26,7 +26,7 @@ db.serialize(() => {
     )`);
 
   //Create table users
-  db.run(`CREATE TABLE users(
+  db.run(`CREATE TABLE admin_user(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         firstname VARCHAR(50) NOT NULL,
         lastname VARCHAR(50) NOT NULL,

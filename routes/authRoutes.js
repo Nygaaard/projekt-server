@@ -74,7 +74,7 @@ router.post("/register", async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
     //Check if user already exists
-    const sqlCheckUsername = "SELECT * FROM users WHERE username = ?";
+    const sqlCheckUsername = "SELECT * FROM admin_user WHERE username = ?";
     db.get(sqlCheckUsername, [username], (err, usernameRow) => {
       if (err) {
         return res.status(500).json({ error: "Server error" });
@@ -84,7 +84,7 @@ router.post("/register", async (req, res) => {
       }
 
       //Check if email already exists
-      const sqlCheckEmail = "SELECT * FROM users WHERE email = ?";
+      const sqlCheckEmail = "SELECT * FROM admin_user WHERE email = ?";
       db.get(sqlCheckEmail, [email], (err, emailRow) => {
         if (err) {
           return res.status(500).json({ error: "Server error" });
@@ -94,7 +94,7 @@ router.post("/register", async (req, res) => {
         }
 
         // If correct information - save user
-        const sql = `INSERT INTO users(firstname, lastname, email, username, password) VALUES(?, ?, ?, ?, ?)`;
+        const sql = `INSERT INTO admin_user(firstname, lastname, email, username, password) VALUES(?, ?, ?, ?, ?)`;
         db.run(
           sql,
           [firstname, lastname, email, username, hashedPassword],
@@ -135,12 +135,25 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    //Check credentials
-    if (username === "Skanjar" && password === "password") {
-      return res.status(200).json({ message: "Login successful" });
-    } else {
-      res.status(401).json({ error: "Invalid username/password" });
-    }
+    //Check if user exist
+    const sql = `SELECT * FROM admin_user WHERE username = ?`;
+    db.get(sql, [username], async (err, row) => {
+      if (err) {
+        res.status(400).json({ message: "Error authenticating" });
+      } else if (!row) {
+        res.status(401).json({ message: "Incorrect username or password" });
+      } else {
+        //User exists
+        const passwordMatch = await bcrypt.compare(password, row.password);
+
+        if (!passwordMatch) {
+          res.status(401).json({ message: "Incorrect username or password" });
+        } else {
+          //Correct login information
+          res.status(200).json({ message: "Correct login" });
+        }
+      }
+    });
   } catch (error) {
     res.status(500).json({ error: "Server error" });
   }
