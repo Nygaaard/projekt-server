@@ -21,11 +21,11 @@ router.use(bodyParser.json());
 router.get("/users", async (req, res) => {
   try {
     const sql = `SELECT * FROM admin_user`;
-    db.all(sql, [], (err, rows) => {
+    db.all(sql, [], (err, row) => {
       if (err) {
         res.status(500).json({ error: "Server error" });
       } else {
-        res.status(200).json({ users: rows });
+        res.status(200).json({ users: row });
       }
     });
   } catch (error) {
@@ -100,4 +100,5 @@ router.delete("/users/:id", async (req, res) => {
   }
 });
 
+//Export router object
 module.exports = router;
