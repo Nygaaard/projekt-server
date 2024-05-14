@@ -97,5 +97,41 @@ router.post("/menu", async (req, res) => {
   }
 });
 
+router.put("/menu/:id", async (req, res) => {
+  try {
+    const menuId = req.params.id;
+    const { coursename, category, price, description } = req.body;
+
+    //Update menu details in the database
+    const sql = `UPDATE menu SET coursename=?, category=?, price=?, description=? WHERE id=?`;
+    db.run(sql, [coursename, category, price, description, menuId], (err) => {
+      if (err) {
+        res.status(500).json({ error: "Server error" });
+      } else {
+        res.status(200).json({ message: "menu updated successfully" });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+//Delete menu
+router.delete("/menu/:id", async (req, res) => {
+  try {
+    const menuId = req.params.id;
+    const sql = `DELETE FROM menu WHERE id=?`;
+    db.run(sql, [menuId], (err) => {
+      if (err) {
+        res.status(500).json({ error: "Server error" });
+      } else {
+        res.status(200).json({ message: "Menu deleted successfully" });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 //Export router object
 module.exports = router;
