@@ -21,6 +21,7 @@ db.serialize(() => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         coursename VARCHAR(255) NOT NULL,
         category VARCHAR(255) NOT NULL,
+        price INTEGER NOT NULL,
         description VARCHAR(255) NOT NULL,
         created DATETIME DEFAULT CURRENT_TIMESTAMP 
     )`);

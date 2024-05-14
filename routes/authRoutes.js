@@ -1,5 +1,5 @@
 /*
-Routes for registration and login
+Route file for managing registration and login
 By Andreas Nygård
 */
 
@@ -171,4 +171,5 @@ router.post("/login", async (req, res) => {
   }
 });
 
+//Export router object
 module.exports = router;
