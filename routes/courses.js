@@ -17,9 +17,9 @@ const db = new sqlite3.Database(process.env.DATABASE);
 router.use(bodyParser.json());
 
 //Get all menus
-router.get("/menu", async (req, res) => {
+router.get("/courses", async (req, res) => {
   try {
-    const sql = `SELECT * FROM menu`;
+    const sql = `SELECT * FROM courses`;
     db.all(sql, [], (err, rows) => {
       if (err) {
         res.status(500).json({ error: "Server error" });
@@ -33,16 +33,16 @@ router.get("/menu", async (req, res) => {
 });
 
 //Get menu by ID
-router.get("/menu/:id", async (req, res) => {
+router.get("/courses/:id", async (req, res) => {
   try {
     const menuId = req.params.id;
-    const sql = `SELECT * FROM menu WHERE id=?`;
+    const sql = `SELECT * FROM courses WHERE id=?`;
     db.get(sql, [menuId], (err, row) => {
       if (err) {
         res.status(500).json({ error: "Server error" });
       } else {
         if (!row) {
-          res.status(404).json({ error: "Menu not found" });
+          res.status(404).json({ error: "Course not found" });
         } else {
           res.status(200).json(row);
         }
@@ -54,7 +54,7 @@ router.get("/menu/:id", async (req, res) => {
 });
 
 //Add new menu
-router.post("/menu", async (req, res) => {
+router.post("/courses", async (req, res) => {
   try {
     const { coursename, category, price, description } = req.body;
 
@@ -64,7 +64,7 @@ router.post("/menu", async (req, res) => {
     }
 
     // Check if menu with the same details already exists
-    const checkIfExistsSql = `SELECT * FROM menu WHERE coursename=? AND category=? AND price=? AND description=?`;
+    const checkIfExistsSql = `SELECT * FROM courses WHERE coursename=? AND category=? AND price=? AND description=?`;
     db.get(
       checkIfExistsSql,
       [coursename, category, price, description],
@@ -74,10 +74,10 @@ router.post("/menu", async (req, res) => {
         } else if (existingMenu) {
           res
             .status(400)
-            .json({ error: "Menu with the same details already exists" });
+            .json({ error: "Course with the same details already exists" });
         } else {
           // Insert values intu table menu
-          const insertSql = `INSERT INTO menu (coursename, category, price, description) VALUES (?,?,?,?)`;
+          const insertSql = `INSERT INTO courses (coursename, category, price, description) VALUES (?,?,?,?)`;
           db.run(
             insertSql,
             [coursename, category, price, description],
@@ -85,7 +85,7 @@ router.post("/menu", async (req, res) => {
               if (err) {
                 res.status(500).json({ error: "Server error" });
               } else {
-                res.status(201).json({ message: "Menu added successfully" });
+                res.status(201).json({ message: "Course added successfully" });
               }
             }
           );
@@ -97,18 +97,19 @@ router.post("/menu", async (req, res) => {
   }
 });
 
-router.put("/menu/:id", async (req, res) => {
+//Update menu
+router.put("/courses/:id", async (req, res) => {
   try {
     const menuId = req.params.id;
     const { coursename, category, price, description } = req.body;
 
     //Update menu details in the database
-    const sql = `UPDATE menu SET coursename=?, category=?, price=?, description=? WHERE id=?`;
+    const sql = `UPDATE courses SET coursename=?, category=?, price=?, description=? WHERE id=?`;
     db.run(sql, [coursename, category, price, description, menuId], (err) => {
       if (err) {
         res.status(500).json({ error: "Server error" });
       } else {
-        res.status(200).json({ message: "menu updated successfully" });
+        res.status(200).json({ message: "Course updated successfully" });
       }
     });
   } catch (error) {
@@ -117,15 +118,15 @@ router.put("/menu/:id", async (req, res) => {
 });
 
 //Delete menu
-router.delete("/menu/:id", async (req, res) => {
+router.delete("/courses/:id", async (req, res) => {
   try {
     const menuId = req.params.id;
-    const sql = `DELETE FROM menu WHERE id=?`;
+    const sql = `DELETE FROM courses WHERE id=?`;
     db.run(sql, [menuId], (err) => {
       if (err) {
         res.status(500).json({ error: "Server error" });
       } else {
-        res.status(200).json({ message: "Menu deleted successfully" });
+        res.status(200).json({ message: "Course deleted successfully" });
       }
     });
   } catch (error) {

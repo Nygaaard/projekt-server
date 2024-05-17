@@ -13,11 +13,11 @@ const db = new sqlite3.Database(process.env.DATABASE);
 //Create tables
 db.serialize(() => {
   //Drop tables if exists
-  db.run("DROP TABLE IF EXISTS menu");
+  db.run("DROP TABLE IF EXISTS courses");
   db.run("DROP TABLE IF EXISTS admin_user");
 
   //Create table menu
-  db.run(`CREATE TABLE menu(
+  db.run(`CREATE TABLE courses(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         coursename VARCHAR(255) NOT NULL,
         category VARCHAR(255) NOT NULL,

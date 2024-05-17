@@ -1,7 +1,7 @@
-/*
-Express server setup for managing authentication routes and protected endpoints
-By Andreas Nygård
-*/
+/**
+ * Express server setup for managing authentication routes and protected endpoints
+ * By Andreas Nygård
+ */
 
 //Requires
 const express = require("express");
@@ -9,7 +9,7 @@ const bodyParser = require("body-parser");
 require("dotenv").config();
 const authRoutes = require("./routes/authRoutes");
 const adminUserRoutes = require("./routes/adminUser");
-const menuRoutes = require("./routes/menu");
+const coursesRoutes = require("./routes/courses");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 
@@ -24,7 +24,7 @@ app.use(cors());
 //Routes
 app.use("/api", authRoutes);
 app.use("/api", adminUserRoutes);
-app.use("/api", menuRoutes);
+app.use("/api", coursesRoutes);
 
 //Protected route
 app.get("/api/protected", authenticateToken, (req, res) => {

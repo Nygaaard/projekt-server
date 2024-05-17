@@ -1,7 +1,7 @@
-/*
-Route file for managing registration and login
-By Andreas Nygård
-*/
+/**
+ * Route file for managing registration and login
+ * By Andreas Nygård
+ */
 
 //Requires
 const express = require("express");
@@ -76,21 +76,21 @@ router.post("/register", async (req, res) => {
 
     //Check if user already exists
     const sqlCheckUsername = "SELECT * FROM admin_user WHERE username = ?";
-    db.get(sqlCheckUsername, [username], (err, usernameRow) => {
+    db.get(sqlCheckUsername, [username], (err, row) => {
       if (err) {
         return res.status(500).json({ error: "Server error" });
       }
-      if (usernameRow) {
+      if (row) {
         return res.status(400).json({ error: "Username already exists" });
       }
 
       //Check if email already exists
       const sqlCheckEmail = "SELECT * FROM admin_user WHERE email = ?";
-      db.get(sqlCheckEmail, [email], (err, emailRow) => {
+      db.get(sqlCheckEmail, [email], (err, row) => {
         if (err) {
           return res.status(500).json({ error: "Server error" });
         }
-        if (emailRow) {
+        if (row) {
           return res.status(400).json({ error: "Email already exists" });
         }
 
