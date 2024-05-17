@@ -1,5 +1,5 @@
 /**
- * Route file for managing CRUD operations on the menu table
+ * Route file for managing CRUD operations on the drinks table
  * By Andreas Nygård
  */
 
@@ -16,10 +16,10 @@ const db = new sqlite3.Database(process.env.DATABASE);
 // Middleware
 router.use(bodyParser.json());
 
-//Get all courses
-router.get("/courses", async (req, res) => {
+//Get all drinks
+router.get("/drinks", async (req, res) => {
   try {
-    const sql = `SELECT * FROM courses`;
+    const sql = `SELECT * FROM drinks`;
     db.all(sql, [], (err, rows) => {
       if (err) {
         res.status(500).json({ error: "Server error" });
@@ -32,11 +32,11 @@ router.get("/courses", async (req, res) => {
   }
 });
 
-//Get course by ID
-router.get("/courses/:id", async (req, res) => {
+//Get drink by ID
+router.get("/drink/:id", async (req, res) => {
   try {
     const menuId = req.params.id;
-    const sql = `SELECT * FROM courses WHERE id=?`;
+    const sql = `SELECT * FROM drinks WHERE id=?`;
     db.get(sql, [menuId], (err, row) => {
       if (err) {
         res.status(500).json({ error: "Server error" });
@@ -54,35 +54,35 @@ router.get("/courses/:id", async (req, res) => {
 });
 
 //Add new course
-router.post("/courses", async (req, res) => {
+router.post("/drinks", async (req, res) => {
   try {
-    const { coursename, description, price } = req.body;
+    const { drinkname, description, price } = req.body;
 
     // Check if any field is empty
-    if (!coursename || !description || !price) {
+    if (!drinkname || !description || !price) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    // Check if course with the same details already exists
-    const checkIfExistsSql = `SELECT * FROM courses WHERE coursename=? AND description=? AND price=?`;
+    // Check if drink with the same details already exists
+    const checkIfExistsSql = `SELECT * FROM drinks WHERE drinkname=? AND description=? AND price=?`;
     db.get(
       checkIfExistsSql,
-      [coursename, description, price],
+      [drinkname, description, price],
       (err, existingMenu) => {
         if (err) {
           res.status(500).json({ error: "Server error" });
         } else if (existingMenu) {
           res
             .status(400)
-            .json({ error: "Course with the same details already exists" });
+            .json({ error: "Drink with the same details already exists" });
         } else {
           // Insert values intu table courses
-          const insertSql = `INSERT INTO courses (coursename, description, price) VALUES (?,?,?,?)`;
-          db.run(insertSql, [coursename, description, price], (err) => {
+          const insertSql = `INSERT INTO drinks (drinkname, description, price) VALUES (?,?,?)`;
+          db.run(insertSql, [drinkname, description, price], (err) => {
             if (err) {
               res.status(500).json({ error: "Server error" });
             } else {
-              res.status(201).json({ message: "Course added successfully" });
+              res.status(201).json({ message: "Drink added successfully" });
             }
           });
         }
@@ -93,19 +93,19 @@ router.post("/courses", async (req, res) => {
   }
 });
 
-//Update course
-router.put("/courses/:id", async (req, res) => {
+//Update drink
+router.put("/drinks/:id", async (req, res) => {
   try {
-    const menuId = req.params.id;
-    const { coursename, description, price } = req.body;
+    const drinkId = req.params.id;
+    const { drinkname, description, price } = req.body;
 
-    //Update course details in the database
-    const sql = `UPDATE courses SET coursename=?, description=?, price=? WHERE id=?`;
-    db.run(sql, [coursename, description, price, menuId], (err) => {
+    //Update drink details in the database
+    const sql = `UPDATE drinks SET drinkname=?, description=?, price=? WHERE id=?`;
+    db.run(sql, [drinkname, description, price, drinkId], (err) => {
       if (err) {
         res.status(500).json({ error: "Server error" });
       } else {
-        res.status(200).json({ message: "Course updated successfully" });
+        res.status(200).json({ message: "Drink updated successfully" });
       }
     });
   } catch (error) {
@@ -113,16 +113,16 @@ router.put("/courses/:id", async (req, res) => {
   }
 });
 
-//Delete course
-router.delete("/courses/:id", async (req, res) => {
+//Delete drink
+router.delete("/drinks/:id", async (req, res) => {
   try {
-    const menuId = req.params.id;
-    const sql = `DELETE FROM courses WHERE id=?`;
-    db.run(sql, [menuId], (err) => {
+    const drinkId = req.params.id;
+    const sql = `DELETE FROM drinks WHERE id=?`;
+    db.run(sql, [drinkId], (err) => {
       if (err) {
         res.status(500).json({ error: "Server error" });
       } else {
-        res.status(200).json({ message: "Course deleted successfully" });
+        res.status(200).json({ message: "Drink deleted successfully" });
       }
     });
   } catch (error) {

@@ -10,6 +10,7 @@ require("dotenv").config();
 const authRoutes = require("./routes/authRoutes");
 const adminUserRoutes = require("./routes/adminUser");
 const coursesRoutes = require("./routes/courses");
+const drinksRoutes = require("./routes/drinks");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 
@@ -25,6 +26,7 @@ app.use(cors());
 app.use("/api", authRoutes);
 app.use("/api", adminUserRoutes);
 app.use("/api", coursesRoutes);
+app.use("/api", drinksRoutes);
 
 //Protected route
 app.get("/api/protected", authenticateToken, (req, res) => {
