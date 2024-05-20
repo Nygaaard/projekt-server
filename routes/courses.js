@@ -56,18 +56,18 @@ router.get("/courses/:id", async (req, res) => {
 //Add new course
 router.post("/courses", async (req, res) => {
   try {
-    const { coursename, description, price } = req.body;
+    const { coursename, description, price, category } = req.body;
 
     // Check if any field is empty
-    if (!coursename || !description || !price) {
+    if (!coursename || !description || !price || !category) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
     // Check if course with the same details already exists
-    const checkIfExistsSql = `SELECT * FROM courses WHERE coursename=? AND description=? AND price=?`;
+    const checkIfExistsSql = `SELECT * FROM courses WHERE coursename=? AND description=? AND price=? AND category=?`;
     db.get(
       checkIfExistsSql,
-      [coursename, description, price],
+      [coursename, description, price, category],
       (err, existingMenu) => {
         if (err) {
           res.status(500).json({ error: "Server error" });
@@ -77,14 +77,18 @@ router.post("/courses", async (req, res) => {
             .json({ error: "Course with the same details already exists" });
         } else {
           // Insert values intu table courses
-          const insertSql = `INSERT INTO courses (coursename, description, price) VALUES (?,?,?,?)`;
-          db.run(insertSql, [coursename, description, price], (err) => {
-            if (err) {
-              res.status(500).json({ error: "Server error" });
-            } else {
-              res.status(201).json({ message: "Course added successfully" });
+          const insertSql = `INSERT INTO courses (coursename, description, price, category) VALUES (?,?,?,?)`;
+          db.run(
+            insertSql,
+            [coursename, description, price, category],
+            (err) => {
+              if (err) {
+                res.status(500).json({ error: "Server error" });
+              } else {
+                res.status(201).json({ message: "Course added successfully" });
+              }
             }
-          });
+          );
         }
       }
     );
@@ -97,11 +101,11 @@ router.post("/courses", async (req, res) => {
 router.put("/courses/:id", async (req, res) => {
   try {
     const menuId = req.params.id;
-    const { coursename, description, price } = req.body;
+    const { coursename, description, price, category } = req.body;
 
     //Update course details in the database
-    const sql = `UPDATE courses SET coursename=?, description=?, price=? WHERE id=?`;
-    db.run(sql, [coursename, description, price, menuId], (err) => {
+    const sql = `UPDATE courses SET coursename=?, description=?, price=?, category=? WHERE id=?`;
+    db.run(sql, [coursename, description, price, category, menuId], (err) => {
       if (err) {
         res.status(500).json({ error: "Server error" });
       } else {

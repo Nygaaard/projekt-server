@@ -16,6 +16,7 @@ db.serialize(() => {
   db.run("DROP TABLE IF EXISTS courses");
   db.run("DROP TABLE IF EXISTS drinks");
   db.run("DROP TABLE IF EXISTS admin_user");
+  db.run("DROP TABLE IF EXISTS subscribers");
 
   //Create table menu
   db.run(`CREATE TABLE courses(
@@ -23,6 +24,7 @@ db.serialize(() => {
         coursename VARCHAR(255) NOT NULL,
         description VARCHAR(255) NOT NULL,
         price INTEGER NOT NULL,
+        category VARCHAR(255) NOT NULL,
         created DATETIME DEFAULT CURRENT_TIMESTAMP 
     )`);
 
@@ -44,6 +46,16 @@ db.serialize(() => {
         username VARCHAR(255) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
         created DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+  //Create table subscribers
+  db.run(`CREATE TABLE subscribers(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      firstname VARCHAR(100) NOT NULL,
+      lastname VARCHAR(100) NOT NULL,
+      email VARCHAR(255) NOT NULL,
+      address VARCHAR(255) NOT NULL,
+      created DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
 
   console.log("Tables created...");

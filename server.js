@@ -11,6 +11,7 @@ const authRoutes = require("./routes/authRoutes");
 const adminUserRoutes = require("./routes/adminUser");
 const coursesRoutes = require("./routes/courses");
 const drinksRoutes = require("./routes/drinks");
+const subscribersRoutes = require("./routes/subscribers");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 
@@ -27,6 +28,7 @@ app.use("/api", authRoutes);
 app.use("/api", adminUserRoutes);
 app.use("/api", coursesRoutes);
 app.use("/api", drinksRoutes);
+app.use("/api", subscribersRoutes);
 
 //Protected route
 app.get("/api/protected", authenticateToken, (req, res) => {
