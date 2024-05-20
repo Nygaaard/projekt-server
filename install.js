@@ -18,7 +18,7 @@ db.serialize(() => {
   db.run("DROP TABLE IF EXISTS admin_user");
   db.run("DROP TABLE IF EXISTS subscribers");
 
-  //Create table menu
+  //Create table courses
   db.run(`CREATE TABLE courses(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         coursename VARCHAR(255) NOT NULL,
