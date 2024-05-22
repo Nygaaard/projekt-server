@@ -16,6 +16,8 @@ Detta är en server byggd med Express och SQLite.
 
 API'et använder en SQLite-databas. Kör kommandot "npm run serve" för att starta servern.
 
+Kör kommandot "node install" för att köra install-scriptet.
+
 ## Användning
 
 Här beskriver jag hur du når API't. Här används "admin_user" som exempel. Alla andra ändpunkter fungerar likadant.
