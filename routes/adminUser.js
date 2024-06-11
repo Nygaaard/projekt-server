@@ -10,12 +10,31 @@ const bodyParser = require("body-parser");
 require("dotenv").config();
 const sqlite3 = require("sqlite3").verbose();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // Connect to database
 const db = new sqlite3.Database(process.env.DATABASE);
 
 // Middleware
 router.use(bodyParser.json());
+
+// Validate user authorization
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (token == null) {
+    res.status(401).json({ message: "Token missing" });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET_KEY, (err, username) => {
+    if (err) {
+      return res.status(403).json({ message: "Invalid JWT" });
+    }
+    req.username = username;
+    next();
+  });
+}
 
 // Get all users
 router.get("/users", async (req, res) => {
@@ -55,7 +74,7 @@ router.get("/users/:id", async (req, res) => {
 });
 
 //Update user
-router.put("/users/:id", async (req, res) => {
+router.put("/users/:id", authenticateToken, async (req, res) => {
   try {
     const userId = req.params.id;
     const { firstname, lastname, email, username, password } = req.body;
@@ -82,7 +101,7 @@ router.put("/users/:id", async (req, res) => {
 });
 
 //Delete user
-router.delete("/users/:id", async (req, res) => {
+router.delete("/users/:id", authenticateToken, async (req, res) => {
   try {
     const userId = req.params.id;
 

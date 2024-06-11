@@ -9,12 +9,31 @@ const router = express.Router();
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const sqlite3 = require("sqlite3").verbose();
+const jwt = require("jsonwebtoken");
 
 // Connect to database
 const db = new sqlite3.Database(process.env.DATABASE);
 
 // Middleware
 router.use(bodyParser.json());
+
+// Validate user authorization
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (token == null) {
+    res.status(401).json({ message: "Token missing" });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET_KEY, (err, username) => {
+    if (err) {
+      return res.status(403).json({ message: "Invalid JWT" });
+    }
+    req.username = username;
+    next();
+  });
+}
 
 //Get all drinks
 router.get("/drinks", async (req, res) => {
@@ -54,7 +73,7 @@ router.get("/drink/:id", async (req, res) => {
 });
 
 //Add new course
-router.post("/drinks", async (req, res) => {
+router.post("/drinks", authenticateToken, async (req, res) => {
   try {
     const { drinkname, description, price } = req.body;
 
@@ -94,7 +113,7 @@ router.post("/drinks", async (req, res) => {
 });
 
 //Update drink
-router.put("/drinks/:id", async (req, res) => {
+router.put("/drinks/:id", authenticateToken, async (req, res) => {
   try {
     const drinkId = req.params.id;
     const { drinkname, description, price } = req.body;
@@ -114,7 +133,7 @@ router.put("/drinks/:id", async (req, res) => {
 });
 
 //Delete drink
-router.delete("/drinks/:id", async (req, res) => {
+router.delete("/drinks/:id", authenticateToken, async (req, res) => {
   try {
     const drinkId = req.params.id;
     const sql = `DELETE FROM drinks WHERE id=?`;

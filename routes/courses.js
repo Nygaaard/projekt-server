@@ -9,12 +9,31 @@ const router = express.Router();
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const sqlite3 = require("sqlite3").verbose();
+const jwt = require("jsonwebtoken");
 
 // Connect to database
 const db = new sqlite3.Database(process.env.DATABASE);
 
 // Middleware
 router.use(bodyParser.json());
+
+// Validate user authorization
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (token == null) {
+    res.status(401).json({ message: "Token missing" });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET_KEY, (err, username) => {
+    if (err) {
+      return res.status(403).json({ message: "Invalid JWT" });
+    }
+    req.username = username;
+    next();
+  });
+}
 
 //Get all courses
 router.get("/courses", async (req, res) => {
@@ -54,7 +73,7 @@ router.get("/courses/:id", async (req, res) => {
 });
 
 //Add new course
-router.post("/courses", async (req, res) => {
+router.post("/courses", authenticateToken, async (req, res) => {
   try {
     const { coursename, description, price, category } = req.body;
 
@@ -98,7 +117,7 @@ router.post("/courses", async (req, res) => {
 });
 
 //Update course
-router.put("/courses/:id", async (req, res) => {
+router.put("/courses/:id", authenticateToken, async (req, res) => {
   try {
     const menuId = req.params.id;
     const { coursename, description, price, category } = req.body;
@@ -118,7 +137,7 @@ router.put("/courses/:id", async (req, res) => {
 });
 
 //Delete course
-router.delete("/courses/:id", async (req, res) => {
+router.delete("/courses/:id", authenticateToken, async (req, res) => {
   try {
     const menuId = req.params.id;
     const sql = `DELETE FROM courses WHERE id=?`;
